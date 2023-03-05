@@ -5,6 +5,7 @@
 #include <uri/UriRegex.h>
 
 #include <secrets.h>
+// Define your WIFI_SSID, WIFI_PASSWORD in secrets.h
 
 /*Defining pins. Note that the are some mismatches on Wemos D1. (the retired one, not mini)*/
 #define REDPIN D7
@@ -52,7 +53,7 @@ void setup() {
     Serial.println(ssid);
     
     WiFi.config(ip, gateway, subnet);
-    WiFi.begin(ssid, password);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     while (WiFi.status() != WL_CONNECTED) {
       delay(500);
       Serial.print(".");
