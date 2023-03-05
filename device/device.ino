@@ -26,14 +26,10 @@ void onRgb() {
     String r = server.arg("r");
     String g = server.arg("g");
     String b = server.arg("b");
-    
-    int castedR = r.toInt();
-    int castedG = g.toInt();
-    int castedB = b.toInt();
 
-    analogWrite(REDPIN, castedR);
-    analogWrite(BLUEPIN, castedB);
-    analogWrite(GREENPIN, castedG);
+    analogWrite(REDPIN, r.toInt());
+    analogWrite(GREENPIN, g.toInt());
+    analogWrite(BLUEPIN, b.toInt());
 
     server.send(200, "text/plain", "R: '" + r + "'" + "G: '" + g + "'" + "B: '" + b + "'");
 }
