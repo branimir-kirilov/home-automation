@@ -22,14 +22,25 @@ void onHome() {
     server.send(200, "text/plain", "hello world!");
 }
 
+int validColor(int color) {
+    if (color < 0) {
+        return 0;
+    } else if (color > 255) {
+        return 255;
+    }
+
+    return color;
+}
+
 void onRgb() {
     String r = server.arg("r");
     String g = server.arg("g");
     String b = server.arg("b");
 
-    analogWrite(REDPIN, r.toInt());
-    analogWrite(GREENPIN, g.toInt());
-    analogWrite(BLUEPIN, b.toInt());
+    // toInt defaults to 0 if no valid conversion is possible
+    analogWrite(REDPIN, validColor(r.toInt()));
+    analogWrite(GREENPIN, validColor(g.toInt()));
+    analogWrite(BLUEPIN, validColor(b.toInt()));
 
     server.send(200, "text/plain", "R: '" + r + "'" + "G: '" + g + "'" + "B: '" + b + "'");
 }
