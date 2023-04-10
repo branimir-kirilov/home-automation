@@ -2,15 +2,17 @@ import { useState } from 'react';
 import { StyleSheet, FlatList } from 'react-native';
 import PopUpModal from '../components/PopUpModal';
 import LightSource from '../components/LightSource';
-import { ListData } from '../types/types';
-import ExpandedLightSource from '../components/ExtendedLightSource';
+import { LightListData } from '../types/types';
+import ExpandedLightSource from '../components/ExpandedLightSource';
 import { lightsListData } from '../data/lightsData';
 
 export default function List() {
     const [expanded, setExpanded] = useState(false);
-    const [expandedItem, setExpandedItem] = useState<ListData | null>(null);
+    const [expandedItem, setExpandedItem] = useState<LightListData | null>(
+        null
+    );
 
-    const onExpand = (item: ListData) => {
+    const onExpand = (item: LightListData) => {
         setExpanded(true);
         setExpandedItem(item);
     };
@@ -27,6 +29,13 @@ export default function List() {
         }
     };
 
+    const onBrightnessChange = (name: string, brightness: number) => {
+        const el = lightsListData.find((el) => el.name === name);
+        if (el) {
+            el.brightness = brightness;
+        }
+    };
+
     return (
         <>
             <FlatList
@@ -35,6 +44,7 @@ export default function List() {
                     <LightSource
                         {...item.item}
                         onExpand={() => onExpand(item.item)}
+                        onBrightnessChange={onBrightnessChange}
                     />
                 )}
                 keyExtractor={(item) => item.name}

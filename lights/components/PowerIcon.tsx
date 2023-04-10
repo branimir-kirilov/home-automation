@@ -1,7 +1,4 @@
-import {
-    StyleSheet,
-    TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 

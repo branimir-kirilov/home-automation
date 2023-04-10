@@ -1,23 +1,25 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { ListData } from '../types/types';
+import { LightListData } from '../types/types';
 import ColorPicker from 'react-native-wheel-color-picker';
 import LightService from '../services/LightService';
 
-interface ExpandedLightSource extends ListData {
+interface ExpandedLightSource extends LightListData {
     onCollapse: () => void;
     onColorChange: (name: string, color: string) => void;
 }
 
 export default function ExpandedLightSource({
     name,
+    path,
     color,
+    brightness,
     onCollapse,
     onColorChange
 }: ExpandedLightSource) {
     const onColorChangeComplete = async (color: string) => {
         onColorChange(name, color);
-        await LightService.changeRGB(name, color);
+        await LightService.changeRGB(path, color, brightness);
     };
 
     return (

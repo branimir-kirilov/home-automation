@@ -1,28 +1,45 @@
-import { ListData } from '../types/types';
+import { LightListData } from '../types/types';
 
-export const lightsListData: ListData[] = [
+export const lightsListData: LightListData[] = [
     {
         name: 'Desk',
-        path: '/desk'
+        path: '/desk',
+        color: '#ffff00',
+        brightness: 100
     },
     {
         name: 'Ceiling',
-        path: '/ceiling'
+        path: '/ceiling',
+        color: '#00ff00',
+        brightness: 1,
+        disabled: true
     },
     {
         name: 'Kitchen',
-        path: '/ceiling'
+        path: '/ceiling',
+        color: '#00ff00',
+        brightness: 1,
+        disabled: true
     },
     {
         name: 'Bedroom',
-        path: '/ceiling'
+        path: '/ceiling',
+        color: '#00ff00',
+        brightness: 1,
+        disabled: true
     },
     {
         name: 'Living room',
-        path: '/ceiling'
+        path: '/ceiling',
+        color: '#00ff00',
+        brightness: 1,
+        disabled: true
     },
     {
         name: 'Floor',
-        path: '/ceiling'
+        path: '/ceiling',
+        color: '#00ff00',
+        brightness: 1,
+        disabled: true
     }
 ];
