@@ -1,5 +1,6 @@
 import { hexToRgb } from '../utils/colors';
 import Constants from 'expo-constants';
+import ToastsService from './ToastsService';
 
 type LightServiceResponse = {};
 
@@ -25,13 +26,16 @@ export default class LightService {
         return fetch(url, req)
             .then((response) => {
                 if (response.status != 200) {
-                    console.log('LightService error here', response);
+                    ToastsService.showErrorToast(
+                        `Error while setting color. Status code: ${response.status}`
+                    );
                     return;
                 }
-                console.log('LightService success!', response.status);
             })
             .catch((error) => {
-                console.log('LightService error', error);
+                ToastsService.showErrorToast(
+                    `Error while setting color. Status code: ${error.status}`
+                );
             });
     }
 
