@@ -1,6 +1,6 @@
 import Toast from 'react-native-toast-message';
 
-export default class LightService {
+export default class ToastsService {
     static showErrorToast(message: string) {
         Toast.show({
             type: 'error',
