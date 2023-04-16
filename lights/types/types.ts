@@ -3,12 +3,13 @@ export interface HomeListData {
     path: string;
 }
 
-export interface LightListData {
+export interface LightSourceData {
     name: string;
     path: string;
     color: string;
     brightness: number;
-    disabled?: boolean;
+    enabled: boolean;
+    notImplemented?: boolean;
 }
 
 export type RGBColor = {
@@ -16,3 +17,5 @@ export type RGBColor = {
     g: number;
     b: number;
 };
+
+export type Status = 'idle' | 'loading' | 'failed';
