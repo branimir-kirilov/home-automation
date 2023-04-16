@@ -1,65 +1,40 @@
-import { useState } from 'react';
-import { StyleSheet, FlatList } from 'react-native';
-import PopUpModal from '../components/PopUpModal';
+import { useEffect } from 'react';
+import { StyleSheet, FlatList, Text } from 'react-native';
 import LightSource from '../components/LightSource';
-import { LightListData } from '../types/types';
-import ExpandedLightSource from '../components/ExpandedLightSource';
-import { lightsListData } from '../data/lightsData';
+import { LightSourceData } from '../types/types';
+import { NavigationProp } from '@react-navigation/core';
+import { useAppDispatch, useAppSelector } from '../hooks/hooks';
+import { selectLightSources } from '../store/lights/lightsSlice';
+import { fetchLightsData } from '../store/lights/thunks';
 
-export default function List() {
-    const [expanded, setExpanded] = useState(false);
-    const [expandedItem, setExpandedItem] = useState<LightListData | null>(
-        null
-    );
+interface HomeListProps {
+    navigation: NavigationProp<any, any>;
+}
 
-    const onExpand = (item: LightListData) => {
-        setExpanded(true);
-        setExpandedItem(item);
-    };
+export default function List({ navigation }: HomeListProps) {
+    const { items, status } = useAppSelector(selectLightSources);
+    const dispatch = useAppDispatch();
 
-    const onCollapse = () => {
-        setExpanded(false);
-        setExpandedItem(null);
-    };
+    useEffect(() => {
+        dispatch(fetchLightsData());
+    }, []);
 
-    const onColorChange = (name: string, color: string) => {
-        const el = lightsListData.find((el) => el.name === name);
-        if (el) {
-            el.color = color;
-        }
-    };
-
-    const onBrightnessChange = (name: string, brightness: number) => {
-        const el = lightsListData.find((el) => el.name === name);
-        if (el) {
-            el.brightness = brightness;
-        }
+    const onExpand = (item: LightSourceData) => {
+        navigation.navigate('LightDetails', item);
     };
 
     return (
         <>
             <FlatList
-                data={lightsListData}
-                renderItem={(item) => (
-                    <LightSource
-                        {...item.item}
-                        onExpand={() => onExpand(item.item)}
-                        onBrightnessChange={onBrightnessChange}
-                    />
+                data={items}
+                renderItem={({ item }) => (
+                    <LightSource item={item} onExpand={() => onExpand(item)} />
                 )}
                 keyExtractor={(item) => item.name}
                 contentContainerStyle={styles.flatList}
                 style={styles.container}
+                refreshing={status === 'loading'}
             />
-            {expanded && expandedItem && (
-                <PopUpModal onCollapse={onCollapse}>
-                    <ExpandedLightSource
-                        {...expandedItem}
-                        onCollapse={onCollapse}
-                        onColorChange={onColorChange}
-                    />
-                </PopUpModal>
-            )}
         </>
     );
 }

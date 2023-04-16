@@ -1,75 +1,66 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Slider } from '@miblanchard/react-native-slider';
-import { useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import PowerIcon from './PowerIcon';
-import { LightListData } from '../types/types';
-import LightService from '../services/LightService';
+import { LightSourceData } from '../types/types';
+import { useAppDispatch } from '../hooks/hooks';
+import { changeLight } from '../store/lights/thunks';
 
-interface LightSourceProps extends LightListData {
+interface LightSourceProps {
+    item: LightSourceData;
     onExpand: () => void;
-    onBrightnessChange: (name: string, brightness: number) => void;
 }
 
-export default function LightSource({
-    name,
-    color,
-    path,
-    brightness,
-    disabled,
-    onExpand,
-    onBrightnessChange
-}: LightSourceProps) {
-    const [enabled, setEnabled] = useState(false);
+export default function LightSource({ item, onExpand }: LightSourceProps) {
+    const dispatch = useAppDispatch();
 
     const toggleEnabled = async () => {
-        setEnabled(!enabled);
-        if (!enabled) {
-            await LightService.changeRGB(path, color, brightness);
+        if (item.enabled) {
+            dispatch(
+                changeLight({ ...item, enabled: !item.enabled, brightness: 0 })
+            );
             return;
         }
 
-        await LightService.changeRGB(path, color, 0);
-    };
-
-    const handleBrightnessChange = async (val: number[]) => {
-        if (!enabled) {
-            setEnabled(true);
-        }
-        onBrightnessChange(name, val[0]);
+        dispatch(
+            changeLight({ ...item, enabled: !item.enabled, brightness: 100 })
+        );
     };
 
     const changeBrightness = async (val: number[]) => {
-        await LightService.changeRGB(path, color, val[0]);
+        dispatch(changeLight({ ...item, brightness: val[0], enabled: true }));
     };
 
     return (
-        <View pointerEvents={disabled ? 'none' : 'auto'}>
+        <View pointerEvents={item.notImplemented ? 'none' : 'auto'}>
+            <Text>{item.enabled}</Text>
             <TouchableOpacity
                 style={{
                     ...styles.container,
-                    ...(disabled ? styles.disabled : {})
+                    ...(item.notImplemented ? styles.disabled : {})
                 }}
                 onPress={onExpand}
             >
                 <View style={styles.topContainer}>
                     <View style={styles.topContainerLeft}>
                         <Text style={{ ...styles.text, ...styles.heading }}>
-                            {name} {disabled && disabled.toString()}
+                            {item.name}
                         </Text>
                     </View>
-                    <PowerIcon enabled={enabled} onToggle={toggleEnabled} />
+                    <PowerIcon
+                        enabled={item.enabled}
+                        onToggle={toggleEnabled}
+                    />
                 </View>
                 <View style={styles.brightnessContainer}>
                     <MaterialIcons
                         name="brightness-4"
                         size={24}
-                        color={enabled ? color : '#999'}
+                        color={item.enabled ? item.color : '#999'}
                     />
                     <Slider
                         containerStyle={styles.sliderStyle}
-                        value={brightness}
-                        onValueChange={handleBrightnessChange}
+                        value={item.brightness}
                         onSlidingComplete={changeBrightness}
                         step={1}
                         minimumValue={1}
@@ -77,11 +68,11 @@ export default function LightSource({
                         trackStyle={styles.trackStyle}
                         thumbStyle={styles.thumbStyle}
                         minimumTrackStyle={{
-                            backgroundColor: enabled ? color : '#999'
+                            backgroundColor: item.enabled ? item.color : '#999'
                         }}
                     />
                     <Text style={styles.text}>
-                        {Math.round(brightness || 0)}
+                        {Math.round(item.brightness || 0)}
                     </Text>
                 </View>
             </TouchableOpacity>
