@@ -1,4 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Colors } from '../utils/colors';
 
 interface HomeItemProps {
     name: string;
@@ -16,7 +17,7 @@ export default function HomeItem({ name, onNavigation }: HomeItemProps) {
 const styles = StyleSheet.create({
     container: {
         width: '45%',
-        backgroundColor: 'rgb(40,41,46)',
+        backgroundColor: Colors.BASE_BACKGROUND,
         height: 150,
         justifyContent: 'center',
         alignItems: 'center',
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 24,
-        color: 'white',
+        color: Colors.WHITE,
         fontFamily: 'sans-serif-thin'
     }
 });

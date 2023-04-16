@@ -1,6 +1,7 @@
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { Colors } from '../utils/colors';
 
 export interface PowerIconProps {
     onToggle: () => void;
@@ -15,14 +16,14 @@ export default function PowerIcon({ onToggle, enabled }: PowerIconProps) {
 
     return (
         <TouchableOpacity
-            style={{ ...styles.container, ...(enabled ? styles.enabled : {}) }}
+            style={{ ...styles.container, ...(enabled && styles.enabled) }}
             onPress={toggleEnabled}
         >
             {enabled ? (
                 <MaterialCommunityIcons
                     name="lightbulb-on-outline"
                     size={18}
-                    color={enabled ? 'white' : '#999'}
+                    color={enabled ? Colors.WHITE : Colors.GRAY}
                 />
             ) : (
                 <MaterialCommunityIcons
@@ -43,11 +44,11 @@ const styles = StyleSheet.create({
         width: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        borderColor: 'white',
+        borderColor: Colors.WHITE,
         borderWidth: 0
     },
     enabled: {
-        borderColor: 'white',
+        borderColor: Colors.WHITE,
         borderWidth: 1
     }
 });

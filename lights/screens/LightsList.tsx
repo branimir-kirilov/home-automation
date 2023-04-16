@@ -6,6 +6,7 @@ import { NavigationProp } from '@react-navigation/core';
 import { useAppDispatch, useAppSelector } from '../hooks/hooks';
 import { selectLightSources } from '../store/lights/lightsSlice';
 import { fetchLightsData } from '../store/lights/thunks';
+import { Colors } from '../utils/colors';
 
 interface HomeListProps {
     navigation: NavigationProp<any, any>;
@@ -40,10 +41,10 @@ export default function List({ navigation }: HomeListProps) {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        backgroundColor: Colors.BLACKISH,
+    },
     flatList: {
         width: '100%'
     },
-    container: {
-        backgroundColor: '#1d1d1d'
-    }
 });

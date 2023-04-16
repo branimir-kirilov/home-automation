@@ -3,18 +3,18 @@ import { HomeListData } from '../types/types';
 export const homeControlData: HomeListData[] = [
     {
         name: 'Lights',
-        path: 'Lights'
+        path: 'LightsList'
     },
     {
         name: 'Heating',
-        path: '/heating'
+        path: 'HeatingList'
     },
     {
         name: 'Blinds',
-        path: '/blinds'
+        path: 'BlindsList'
     },
     {
         name: 'Plants',
-        path: '/plants'
+        path: 'PlantsList'
     }
 ];

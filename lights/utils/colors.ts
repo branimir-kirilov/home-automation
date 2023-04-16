@@ -9,3 +9,12 @@ export const hexToRgb = (hex: string): RGBColor => {
 
     return { r, g, b };
 };
+
+export const Colors = {
+    WHITE: 'white',
+    BLACK: 'black',
+    GRAY: '#999',
+    GRAY_LIGHT: '#ccc',
+    BLACKISH: '#1d1d1d',
+    BASE_BACKGROUND: 'rgb(40,41,46)',
+}

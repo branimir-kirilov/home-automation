@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeListStackNavigator from './HomeStackNavigator';
 import SettingsScreen from '../screens/Settings';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../utils/colors';
 
 const Tab = createBottomTabNavigator();
 
@@ -11,7 +12,7 @@ const AppNavigator = () => {
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 tabBarStyle: {
-                    backgroundColor: 'rgb(40,41,46)'
+                    backgroundColor: Colors.BASE_BACKGROUND
                 },
                 tabBarIcon: ({ focused, color, size }) => {
                     return (

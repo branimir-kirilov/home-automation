@@ -5,6 +5,7 @@ import PowerIcon from './PowerIcon';
 import { LightSourceData } from '../types/types';
 import { useAppDispatch } from '../hooks/hooks';
 import { changeLight } from '../store/lights/thunks';
+import { Colors } from '../utils/colors';
 
 interface LightSourceProps {
     item: LightSourceData;
@@ -37,7 +38,7 @@ export default function LightSource({ item, onExpand }: LightSourceProps) {
             <TouchableOpacity
                 style={{
                     ...styles.container,
-                    ...(item.notImplemented ? styles.disabled : {})
+                    ...(item.notImplemented && styles.disabled)
                 }}
                 onPress={onExpand}
             >
@@ -56,7 +57,7 @@ export default function LightSource({ item, onExpand }: LightSourceProps) {
                     <MaterialIcons
                         name="brightness-4"
                         size={24}
-                        color={item.enabled ? item.color : '#999'}
+                        color={item.enabled ? item.color : Colors.GRAY}
                     />
                     <Slider
                         containerStyle={styles.sliderStyle}
@@ -68,7 +69,7 @@ export default function LightSource({ item, onExpand }: LightSourceProps) {
                         trackStyle={styles.trackStyle}
                         thumbStyle={styles.thumbStyle}
                         minimumTrackStyle={{
-                            backgroundColor: item.enabled ? item.color : '#999'
+                            backgroundColor: item.enabled ? item.color : Colors.GRAY
                         }}
                     />
                     <Text style={styles.text}>
@@ -82,7 +83,7 @@ export default function LightSource({ item, onExpand }: LightSourceProps) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'rgb(40,41,46)',
+        backgroundColor: Colors.BASE_BACKGROUND,
         height: 150,
         marginBottom: 2,
         padding: 15,
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     text: {
-        color: 'white',
+        color: Colors.WHITE,
         fontFamily: 'sans-serif-thin',
         fontSize: 18
     },
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
         width: '80%'
     },
     trackStyle: {
-        backgroundColor: '#999',
+        backgroundColor: Colors.GRAY,
         height: 25,
         borderRadius: 10
     },
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
         width: 0
     },
     minimumTrackDisabled: {
-        backgroundColor: '#ccc'
+        backgroundColor: Colors.GRAY_LIGHT,
     },
     overlayContainer: {
         position: 'absolute',

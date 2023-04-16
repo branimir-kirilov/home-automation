@@ -4,6 +4,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '../navigation/HomeStackNavigator';
 import { useAppDispatch } from '../hooks/hooks';
 import { changeLight } from '../store/lights/thunks';
+import { Colors } from '../utils/colors';
 
 interface LightDetailsProps
     extends NativeStackScreenProps<HomeStackParamList, 'LightDetails'> {}
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: '100%',
-        backgroundColor: 'rgb(40,41,46)',
+        backgroundColor: Colors.BASE_BACKGROUND,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 15,
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 30,
-        color: 'white',
+        color: Colors.WHITE,
         fontFamily: 'sans-serif-thin'
     },
     colorPickerContainer: {
