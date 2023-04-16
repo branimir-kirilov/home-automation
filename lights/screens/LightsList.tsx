@@ -42,9 +42,9 @@ export default function List({ navigation }: HomeListProps) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.BLACKISH,
+        backgroundColor: Colors.BLACKISH
     },
     flatList: {
         width: '100%'
-    },
+    }
 });

@@ -16,5 +16,5 @@ export const Colors = {
     GRAY: '#999',
     GRAY_LIGHT: '#ccc',
     BLACKISH: '#1d1d1d',
-    BASE_BACKGROUND: 'rgb(40,41,46)',
-}
+    BASE_BACKGROUND: 'rgb(40,41,46)'
+};

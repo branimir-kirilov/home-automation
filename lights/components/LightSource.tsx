@@ -3,7 +3,7 @@ import { Slider } from '@miblanchard/react-native-slider';
 import { MaterialIcons } from '@expo/vector-icons';
 import PowerIcon from './PowerIcon';
 import { LightSourceData } from '../types/types';
-import { useAppDispatch } from '../hooks/hooks';
+import { useAppDispatch, useAppSelector } from '../hooks/hooks';
 import { changeLight } from '../store/lights/thunks';
 import { Colors } from '../utils/colors';
 
@@ -34,7 +34,6 @@ export default function LightSource({ item, onExpand }: LightSourceProps) {
 
     return (
         <View pointerEvents={item.notImplemented ? 'none' : 'auto'}>
-            <Text>{item.enabled}</Text>
             <TouchableOpacity
                 style={{
                     ...styles.container,
@@ -69,7 +68,9 @@ export default function LightSource({ item, onExpand }: LightSourceProps) {
                         trackStyle={styles.trackStyle}
                         thumbStyle={styles.thumbStyle}
                         minimumTrackStyle={{
-                            backgroundColor: item.enabled ? item.color : Colors.GRAY
+                            backgroundColor: item.enabled
+                                ? item.color
+                                : Colors.GRAY
                         }}
                     />
                     <Text style={styles.text}>
@@ -78,6 +79,7 @@ export default function LightSource({ item, onExpand }: LightSourceProps) {
                 </View>
             </TouchableOpacity>
         </View>
+
     );
 }
 
@@ -88,7 +90,7 @@ const styles = StyleSheet.create({
         marginBottom: 2,
         padding: 15,
         flexDirection: 'column',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     text: {
         color: Colors.WHITE,
@@ -127,7 +129,7 @@ const styles = StyleSheet.create({
         width: 0
     },
     minimumTrackDisabled: {
-        backgroundColor: Colors.GRAY_LIGHT,
+        backgroundColor: Colors.GRAY_LIGHT
     },
     overlayContainer: {
         position: 'absolute',

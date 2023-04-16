@@ -36,9 +36,9 @@ export default function HomeList({ navigation }: HomeListProps) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.BLACKISH,
+        backgroundColor: Colors.BLACKISH
     },
     contentContainer: {
         width: '100%'
-    },
+    }
 });

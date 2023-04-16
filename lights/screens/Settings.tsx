@@ -9,13 +9,11 @@ export default function Settings() {
     );
 }
 
-
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.BLACKISH,
+        backgroundColor: Colors.BLACKISH
     },
     title: {
-        color: Colors.WHITE,
+        color: Colors.WHITE
     }
 });
-
