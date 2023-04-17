@@ -8,7 +8,7 @@ import LightDetails from '../screens/LightDetails';
 export type HomeStackParamList = {
     HomeList: undefined;
     LightsList: undefined;
-    LightDetails: { name: string };
+    LightDetails: { id: string };
 };
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();

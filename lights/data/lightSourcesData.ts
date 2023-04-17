@@ -2,6 +2,7 @@ import { LightSourceData } from '../types/types';
 
 export const lightsListData: LightSourceData[] = [
     {
+        id: 'desk',
         name: 'Desk',
         path: '/desk',
         color: '#ffff00',
@@ -10,6 +11,7 @@ export const lightsListData: LightSourceData[] = [
         status: 'idle'
     },
     {
+        id: 'ceiling',
         name: 'Ceiling',
         path: '/ceiling',
         color: '#00ff00',
@@ -18,6 +20,7 @@ export const lightsListData: LightSourceData[] = [
         enabled: false
     },
     {
+        id: 'kitchen',
         name: 'Kitchen',
         path: '/ceiling',
         color: '#00ff00',
@@ -27,6 +30,7 @@ export const lightsListData: LightSourceData[] = [
         notImplemented: true
     },
     {
+        id: 'bedroom',
         name: 'Bedroom',
         path: '/ceiling',
         color: '#00ff00',
@@ -36,6 +40,7 @@ export const lightsListData: LightSourceData[] = [
         notImplemented: true
     },
     {
+        id: 'living room',
         name: 'Living room',
         path: '/ceiling',
         color: '#00ff00',
@@ -45,6 +50,7 @@ export const lightsListData: LightSourceData[] = [
         notImplemented: true
     },
     {
+        id: 'floor',
         name: 'Floor',
         path: '/ceiling',
         color: '#00ff00',

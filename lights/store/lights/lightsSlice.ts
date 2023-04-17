@@ -1,83 +1,77 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 import { LightSourceData, Status } from '../../types/types';
-import { changeLight, fetchLightsData } from './thunks';
+import { fetchLightsData } from './thunks';
+import LightService from '../../services/LightService';
 
-
-export interface LightsSlice {
-    lightSources: {
-        items: LightSourceData[],
-        status: Status;
-    },
-    changeLight: {
-        status: Status;
-        error: string | undefined;
-    }
+interface LightsState extends EntityState<LightSourceData> {
+    status: Status;
+    error: string | null;
 }
 
-const initialState: LightsSlice = {
-    lightSources: {
-        items: [],
-        status: 'idle',
-    },
-    changeLight: {
-        status: 'idle',
-        error: undefined,
+const lightsAdapter = createEntityAdapter<LightSourceData>({
+    selectId: (lightSource) => lightSource.id,
+    // temporarily sort desc by notImplemented field
+    sortComparer: (a, b) => Number(b.notImplemented) - Number(a.notImplemented)
+})
+
+export const updateLight = createAsyncThunk<
+    void,
+    { id: string, changes: Partial<LightSourceData> },
+    { rejectValue: string }
+>('lights/updateLight', async ({ id, changes }, { dispatch, getState }) => {
+    try {
+        const light = selectLightById(getState() as RootState, id);
+        if (!light) {
+          throw new Error(`Light with id ${id} not found`);
+        }
+        dispatch(lightUpdated({ id: light.id, changes: { status: 'loading' } }));
+
+        await LightService.changeLight({ ...light, ...changes });
+
+        dispatch(lightUpdated({ id, changes: { ...changes, status: 'idle' } }));
+    } catch (error) {
+        dispatch(lightUpdated({ id, changes: { ...changes, status: 'failed' } }));
     }
-};
+});
 
 export const lightsSlice = createSlice({
     name: 'lightsSlice',
-    initialState,
+    initialState: lightsAdapter.getInitialState<LightsState>({
+        ids: [],
+        entities: {},
+        status: 'idle',
+        error: null,
+    }),
     reducers: {
-        updateItems: (state, action: PayloadAction<LightSourceData[]>) => {
-            state.lightSources.items = action.payload;
-        },
+        lightUpdated: lightsAdapter.updateOne,
     },
     extraReducers: (builder) => {
         builder
             .addCase(fetchLightsData.pending, (state) => {
-                state.lightSources.status = 'loading';
+                state.status = 'loading';
             })
             .addCase(fetchLightsData.fulfilled, (state, action) => {
-                state.lightSources.status = 'idle';
-                state.lightSources.items = action.payload;
+                state.status = 'idle';
+                lightsAdapter.upsertMany(state, action.payload);
             })
             .addCase(fetchLightsData.rejected, (state) => {
-                state.lightSources.status = 'failed';
-            })
-            // TODO: refactor and use adapter
-            .addCase(changeLight.pending, (state, action) => {
-                state.changeLight.status = 'loading';
-                const res = state.lightSources.items.find(lightSource => lightSource.name === action.meta.arg.name);
-                if (res) {
-                    res.status = 'loading';
-                }
-            })
-            .addCase(changeLight.fulfilled, (state, action) => {
-                state.changeLight.status = 'idle';
-                state.lightSources.items = action.payload.items;
-                const res = state.lightSources.items.find(lightSource => lightSource.name === action.meta.arg.name);
-                if (res) {
-                    res.status = 'idle';
-                }
-            })
-            .addCase(changeLight.rejected, (state, action) => {
-                state.changeLight.status = 'failed';
-                const res = state.lightSources.items.find(lightSource => lightSource.name === action.meta.arg.name);
-                if (res) {
-                    res.status = 'failed';
-                    res.error = action.error.message;
-                }
-                state.changeLight.error = action.error.message;
-            })
+                state.status = 'failed';
+            });
     },
 });
 
-export const { updateItems } = lightsSlice.actions;
+export const { lightUpdated } = lightsSlice.actions;
 
-export const selectLightSources = (state: RootState) => state.lights.lightSources;
-export const selectLightSourceByName = (name: string) => (state: RootState) => state.lights.lightSources.items.find(item => item.name === name);
+const lightSelectors = lightsAdapter.getSelectors<RootState>(
+    (state) => state.lights
+)
 
+
+export const {
+    selectAll: selectAllLights,
+    selectById: selectLightById,
+    selectEntities: selectLightEntities,
+} = lightSelectors;
 
 export default lightsSlice.reducer;
