@@ -19,19 +19,22 @@ export const updateLight = createAsyncThunk<
     void,
     { id: string, changes: Partial<LightSourceData> },
     { rejectValue: string }
->('lights/updateLight', async ({ id, changes }, { dispatch, getState }) => {
+>('lights/updateLight', async ({ id, changes }, { dispatch, getState, rejectWithValue }) => {
     try {
         const light = selectLightById(getState() as RootState, id);
         if (!light) {
           throw new Error(`Light with id ${id} not found`);
         }
+
         dispatch(lightUpdated({ id: light.id, changes: { status: 'loading' } }));
 
         await LightService.changeLight({ ...light, ...changes });
 
         dispatch(lightUpdated({ id, changes: { ...changes, status: 'idle' } }));
     } catch (error) {
-        dispatch(lightUpdated({ id, changes: { ...changes, status: 'failed' } }));
+        dispatch(lightUpdated({ id, changes: { status: 'failed' } }));
+
+        return rejectWithValue('Error updating light');
     }
 });
 
