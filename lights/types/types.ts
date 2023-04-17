@@ -4,6 +4,7 @@ export interface HomeListData {
 }
 
 export interface LightSourceData {
+    id: string;
     name: string;
     path: string;
     color: string;
@@ -20,4 +21,5 @@ export type RGBColor = {
     b: number;
 };
 
+// TODO: Enum
 export type Status = 'idle' | 'loading' | 'failed';

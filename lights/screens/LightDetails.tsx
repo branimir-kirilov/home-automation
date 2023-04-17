@@ -3,28 +3,25 @@ import ColorPicker from 'react-native-wheel-color-picker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '../navigation/HomeStackNavigator';
 import { useAppDispatch, useAppSelector } from '../hooks/hooks';
-import { changeLight } from '../store/lights/thunks';
+import { updateLight } from '../store/lights/lightsSlice';
 import { Colors } from '../utils/colors';
-import { selectLightSourceByName } from '../store/lights/lightsSlice';
 import { useCallback, useMemo } from 'react';
 import LoadingOverlay from '../components/LoadingOverlay';
+import { selectLightById } from '../store/lights/lightsSlice';
 
 interface LightDetailsProps
     extends NativeStackScreenProps<HomeStackParamList, 'LightDetails'> {}
 
 export default function LightDetails({ route }: LightDetailsProps) {
-    const name = route.params.name;
+    const id = route.params.id;
     const dispatch = useAppDispatch();
-    const item = useAppSelector(selectLightSourceByName(name));
+    const item = useAppSelector((state) => selectLightById(state, id));
 
-    const onColorChangeComplete = useCallback(
-        (color: string) => {
-            if (item && item.status === 'idle') {
-                dispatch(changeLight({ ...item, color }));
-            }
-        },
-        [item, dispatch, changeLight]
-    );
+    const onColorChangeComplete = useCallback((color: string) => {
+        if (item && item.status === 'idle') {
+            dispatch(updateLight({ id: item.id, changes: { color } }));
+        }
+    }, [item, dispatch, updateLight]);
 
     const memoizedColorPicker = useMemo(
         () => (

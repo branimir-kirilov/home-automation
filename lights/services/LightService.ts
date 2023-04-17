@@ -9,7 +9,7 @@ export default class LightService {
     // A mock function to mimic making an async GET request for light sources data
     static fetchLightsData() {
         return new Promise<{ data: LightSourceData[] }>((resolve) =>
-            setTimeout(() => resolve({ data: lightsListData }), 150)
+            setTimeout(() => resolve({ data: lightsListData }), 0)
         );
     }
 

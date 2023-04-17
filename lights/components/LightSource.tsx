@@ -1,15 +1,10 @@
-import {
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Slider } from '@miblanchard/react-native-slider';
 import { MaterialIcons } from '@expo/vector-icons';
 import PowerIcon from './PowerIcon';
 import { LightSourceData } from '../types/types';
 import { useAppDispatch } from '../hooks/hooks';
-import { changeLight } from '../store/lights/thunks';
+import { updateLight } from '../store/lights/lightsSlice';
 import { Colors } from '../utils/colors';
 import LoadingOverlay from './LoadingOverlay';
 
@@ -24,18 +19,30 @@ export default function LightSource({ item, onExpand }: LightSourceProps) {
     const toggleEnabled = async () => {
         if (item.enabled) {
             dispatch(
-                changeLight({ ...item, enabled: !item.enabled, brightness: 0 })
+                updateLight({
+                    id: item.id,
+                    changes: { enabled: false, brightness: 0 }
+                })
             );
             return;
         }
 
         dispatch(
-            changeLight({ ...item, enabled: !item.enabled, brightness: 100 })
+            updateLight({
+                id: item.id,
+                changes: { enabled: true, brightness: 100 }
+            })
         );
     };
 
     const changeBrightness = async (val: number[]) => {
-        dispatch(changeLight({ ...item, brightness: val[0], enabled: true }));
+        console.log('hey', item.id, val[0]);
+        dispatch(
+            updateLight({
+                id: item.id,
+                changes: { enabled: true, brightness: val[0] }
+            })
+        );
     };
 
     return (
@@ -57,6 +64,9 @@ export default function LightSource({ item, onExpand }: LightSourceProps) {
                     <View style={styles.topContainerLeft}>
                         <Text style={{ ...styles.text, ...styles.heading }}>
                             {item.name}
+                        </Text>
+                        <Text style={{ ...styles.text, ...styles.heading }}>
+                            {item.status}
                         </Text>
                     </View>
                     <PowerIcon
