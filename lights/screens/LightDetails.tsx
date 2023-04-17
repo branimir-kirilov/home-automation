@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import ColorPicker from 'react-native-wheel-color-picker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '../navigation/HomeStackNavigator';
@@ -6,7 +6,8 @@ import { useAppDispatch, useAppSelector } from '../hooks/hooks';
 import { changeLight } from '../store/lights/thunks';
 import { Colors } from '../utils/colors';
 import { selectLightSourceByName } from '../store/lights/lightsSlice';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 interface LightDetailsProps
     extends NativeStackScreenProps<HomeStackParamList, 'LightDetails'> {}
@@ -39,12 +40,7 @@ export default function LightDetails({ route }: LightDetailsProps) {
         <View style={styles.container}>
             {item && (
                 <>
-                    <Text>{item.status}</Text>
-                    {item.status === 'loading' && (
-                        <View style={styles.loadingContainer}>
-                            <ActivityIndicator size={'large'} />
-                        </View>
-                    )}
+                    {item.status === 'loading' && <LoadingOverlay />}
                     <View style={styles.header}>
                         <Text style={styles.title}>{item.name}</Text>
                     </View>
@@ -88,17 +84,5 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         height: '75%',
         width: '100%'
-    },
-    loadingContainer: {
-        position: 'absolute',
-        backgroundColor: Colors.BLACKISH,
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-        opacity: 0.9,
-        zIndex: 1
     }
 });

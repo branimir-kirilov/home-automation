@@ -12,6 +12,7 @@ import { LightSourceData } from '../types/types';
 import { useAppDispatch } from '../hooks/hooks';
 import { changeLight } from '../store/lights/thunks';
 import { Colors } from '../utils/colors';
+import LoadingOverlay from './LoadingOverlay';
 
 interface LightSourceProps {
     item: LightSourceData;
@@ -89,12 +90,7 @@ export default function LightSource({ item, onExpand }: LightSourceProps) {
                         {Math.round(item.brightness || 0)}
                     </Text>
                 </View>
-                {/* TODO: generic activity indicator */}
-                {item.status === 'loading' && (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size={'large'} />
-                    </View>
-                )}
+                {item.status === 'loading' && <LoadingOverlay />}
             </TouchableOpacity>
         </View>
     );
@@ -154,16 +150,5 @@ const styles = StyleSheet.create({
     },
     disabled: {
         opacity: 0.2
-    },
-    loadingContainer: {
-        position: 'absolute',
-        backgroundColor: Colors.BLACKISH,
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-        opacity: 0.9
     }
 });
