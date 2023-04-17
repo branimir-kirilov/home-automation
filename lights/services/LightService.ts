@@ -5,8 +5,6 @@ import { LightSourceData } from '../types/types';
 
 const WEMOS_URL = Constants?.expoConfig?.extra?.WEMOS_HOST;
 
-// TODO investigate:
-// https://redux-toolkit.js.org/rtk-query/usage/code-splitting
 export default class LightService {
     // A mock function to mimic making an async GET request for light sources data
     static fetchLightsData() {
