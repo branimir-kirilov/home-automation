@@ -6,15 +6,16 @@ export const lightsListData: LightSourceData[] = [
         path: '/desk',
         color: '#ffff00',
         brightness: 100,
-        enabled: true
+        enabled: true,
+        status: 'idle'
     },
     {
         name: 'Ceiling',
         path: '/ceiling',
         color: '#00ff00',
         brightness: 0,
-        enabled: false,
-        notImplemented: true
+        status: 'idle',
+        enabled: false
     },
     {
         name: 'Kitchen',
@@ -22,6 +23,7 @@ export const lightsListData: LightSourceData[] = [
         color: '#00ff00',
         brightness: 0,
         enabled: false,
+        status: 'idle',
         notImplemented: true
     },
     {
@@ -30,6 +32,7 @@ export const lightsListData: LightSourceData[] = [
         color: '#00ff00',
         brightness: 0,
         enabled: false,
+        status: 'idle',
         notImplemented: true
     },
     {
@@ -38,6 +41,7 @@ export const lightsListData: LightSourceData[] = [
         color: '#00ff00',
         brightness: 0,
         enabled: false,
+        status: 'idle',
         notImplemented: true
     },
     {
@@ -46,6 +50,7 @@ export const lightsListData: LightSourceData[] = [
         color: '#00ff00',
         brightness: 0,
         enabled: false,
+        status: 'idle',
         notImplemented: true
     }
 ];

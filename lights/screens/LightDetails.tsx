@@ -1,34 +1,59 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import ColorPicker from 'react-native-wheel-color-picker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '../navigation/HomeStackNavigator';
-import { useAppDispatch } from '../hooks/hooks';
+import { useAppDispatch, useAppSelector } from '../hooks/hooks';
 import { changeLight } from '../store/lights/thunks';
 import { Colors } from '../utils/colors';
+import { selectLightSourceByName } from '../store/lights/lightsSlice';
+import { useCallback, useMemo, useState } from 'react';
 
 interface LightDetailsProps
     extends NativeStackScreenProps<HomeStackParamList, 'LightDetails'> {}
 
 export default function LightDetails({ route }: LightDetailsProps) {
-    const item = route.params;
+    const name = route.params.name;
     const dispatch = useAppDispatch();
+    const item = useAppSelector(selectLightSourceByName(name));
 
-    const onColorChangeComplete = (color: string) => {
-        dispatch(changeLight({ ...item, color }));
-    };
+    const onColorChangeComplete = useCallback(
+        (color: string) => {
+            if (item && item.status === 'idle') {
+                dispatch(changeLight({ ...item, color }));
+            }
+        },
+        [item, dispatch, changeLight]
+    );
+
+    const memoizedColorPicker = useMemo(
+        () => (
+            <ColorPicker
+                onColorChangeComplete={onColorChangeComplete}
+                color={item?.color}
+            />
+        ),
+        []
+    );
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>{item.name}</Text>
-            </View>
-            <View style={styles.colorPickerContainer}>
-                <ColorPicker
-                    onColorChangeComplete={onColorChangeComplete}
-                    color={item.color}
-                />
-                {/* TODO: add custom color input */}
-            </View>
+            {item && (
+                <>
+                    <Text>{item.status}</Text>
+                    {item.status === 'loading' && (
+                        <View style={styles.loadingContainer}>
+                            <ActivityIndicator size={'large'} />
+                        </View>
+                    )}
+                    <View style={styles.header}>
+                        <Text style={styles.title}>{item.name}</Text>
+                    </View>
+                    <View style={styles.colorPickerContainer}>
+                        {memoizedColorPicker}
+                        {/* TODO: add custom color input */}
+                    </View>
+                </>
+            )}
         </View>
     );
 }
@@ -63,5 +88,17 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         height: '75%',
         width: '100%'
+    },
+    loadingContainer: {
+        position: 'absolute',
+        backgroundColor: Colors.BLACKISH,
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        opacity: 0.9,
+        zIndex: 1
     }
 });

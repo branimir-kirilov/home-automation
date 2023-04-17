@@ -4,12 +4,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeList from '../screens/HomeList';
 import LightsList from '../screens/LightsList';
 import LightDetails from '../screens/LightDetails';
-import { LightSourceData } from '../types/types';
 
 export type HomeStackParamList = {
     HomeList: undefined;
     LightsList: undefined;
-    LightDetails: LightSourceData;
+    LightDetails: { name: string };
 };
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();

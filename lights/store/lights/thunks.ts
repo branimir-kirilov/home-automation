@@ -32,6 +32,6 @@ export const changeLight = createAsyncThunk(
             return item;
         });
 
-        return { items: updatedItems, response: response };
+        return { items: updatedItems, response: response.body };
     }
 );

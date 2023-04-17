@@ -1,9 +1,15 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+    ActivityIndicator,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import { Slider } from '@miblanchard/react-native-slider';
 import { MaterialIcons } from '@expo/vector-icons';
 import PowerIcon from './PowerIcon';
 import { LightSourceData } from '../types/types';
-import { useAppDispatch, useAppSelector } from '../hooks/hooks';
+import { useAppDispatch } from '../hooks/hooks';
 import { changeLight } from '../store/lights/thunks';
 import { Colors } from '../utils/colors';
 
@@ -33,7 +39,13 @@ export default function LightSource({ item, onExpand }: LightSourceProps) {
     };
 
     return (
-        <View pointerEvents={item.notImplemented ? 'none' : 'auto'}>
+        <View
+            pointerEvents={
+                item.notImplemented || item.status === 'loading'
+                    ? 'none'
+                    : 'auto'
+            }
+        >
             <TouchableOpacity
                 style={{
                     ...styles.container,
@@ -77,9 +89,14 @@ export default function LightSource({ item, onExpand }: LightSourceProps) {
                         {Math.round(item.brightness || 0)}
                     </Text>
                 </View>
+                {/* TODO: generic activity indicator */}
+                {item.status === 'loading' && (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size={'large'} />
+                    </View>
+                )}
             </TouchableOpacity>
         </View>
-
     );
 }
 
@@ -90,7 +107,7 @@ const styles = StyleSheet.create({
         marginBottom: 2,
         padding: 15,
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
     },
     text: {
         color: Colors.WHITE,
@@ -137,5 +154,16 @@ const styles = StyleSheet.create({
     },
     disabled: {
         opacity: 0.2
+    },
+    loadingContainer: {
+        position: 'absolute',
+        backgroundColor: Colors.BLACKISH,
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        opacity: 0.9
     }
 });

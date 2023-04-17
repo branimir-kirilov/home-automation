@@ -21,7 +21,7 @@ export default function List({ navigation }: HomeListProps) {
     }, []);
 
     const onExpand = (item: LightSourceData) => {
-        navigation.navigate('LightDetails', item);
+        navigation.navigate('LightDetails', { name: item.name });
     };
 
     return (

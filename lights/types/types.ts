@@ -9,6 +9,8 @@ export interface LightSourceData {
     color: string;
     brightness: number;
     enabled: boolean;
+    status: Status;
+    error?: string;
     notImplemented?: boolean;
 }
 
