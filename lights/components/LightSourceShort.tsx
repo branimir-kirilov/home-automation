@@ -7,12 +7,12 @@ import { Colors } from '../utils/colors';
 import LoadingOverlay from './LoadingOverlay';
 import BrightnessSlider from './BrightnessSlider';
 
-interface LightSourceProps {
+interface LightSourceShortProps {
     item: LightSourceData;
     onExpand: () => void;
 }
 
-export default function LightSource({ item, onExpand }: LightSourceProps) {
+export default function LightSourceShort({ item, onExpand }: LightSourceShortProps) {
     const dispatch = useAppDispatch();
 
     // TODO: Better way to do this?

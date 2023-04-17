@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { StyleSheet, FlatList, Text } from 'react-native';
-import LightSource from '../components/LightSource';
-import { LightSourceData } from '../types/types';
+import LightSourceShort from '../../components/LightSourceShort';
+import { LightSourceData } from '../../types/types';
 import { NavigationProp } from '@react-navigation/core';
-import { useAppDispatch, useAppSelector } from '../hooks/hooks';
-import { fetchLightsData } from '../store/lights/thunks';
-import { Colors } from '../utils/colors';
-import { selectAllLights } from '../store/lights/lightsSlice';
+import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
+import { fetchLightsData } from '../../store/lights/thunks';
+import { Colors } from '../../utils/colors';
+import { selectAllLights } from '../../store/lights/lightsSlice';
 
 interface HomeListProps {
     navigation: NavigationProp<any, any>;
@@ -29,7 +29,7 @@ export default function List({ navigation }: HomeListProps) {
             <FlatList
                 data={items}
                 renderItem={({ item }) => (
-                    <LightSource item={item} onExpand={() => onExpand(item)} />
+                    <LightSourceShort item={item} onExpand={() => onExpand(item)} />
                 )}
                 keyExtractor={(item) => item.name}
                 contentContainerStyle={styles.flatList}

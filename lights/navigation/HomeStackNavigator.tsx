@@ -2,8 +2,8 @@ import { StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import HomeList from '../screens/HomeList';
-import LightsList from '../screens/LightsList';
-import LightDetails from '../screens/LightDetails';
+import LightsList from '../screens/lights/LightsList';
+import LightDetails from '../screens/lights/LightSourceDetails';
 
 export type HomeStackParamList = {
     HomeList: undefined;
