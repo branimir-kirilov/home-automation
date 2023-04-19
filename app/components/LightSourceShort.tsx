@@ -64,9 +64,6 @@ export default function LightSourceShort({ item, onExpand }: LightSourceShortPro
                         <Text style={{ ...styles.text, ...styles.heading }}>
                             {item.name}
                         </Text>
-                        <Text style={{ ...styles.text, ...styles.heading }}>
-                            {item.status}
-                        </Text>
                     </View>
                     <PowerIcon
                         enabled={item.enabled}
