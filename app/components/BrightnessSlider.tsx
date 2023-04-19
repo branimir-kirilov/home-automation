@@ -5,11 +5,14 @@ import { LightSourceData } from '../types/types';
 import { Colors } from '../utils/colors';
 
 interface BrightnessSliderProps {
-    onBrightnessChange: (value: number[]) => void
-    item: LightSourceData
+    onBrightnessChange: (value: number[]) => void;
+    item: LightSourceData;
 }
 
-export default function BrightnessSlider({ item, onBrightnessChange }: BrightnessSliderProps) {
+export default function BrightnessSlider({
+    item,
+    onBrightnessChange
+}: BrightnessSliderProps) {
     return (
         <View style={styles.brightnessContainer}>
             <MaterialIcons
@@ -27,14 +30,10 @@ export default function BrightnessSlider({ item, onBrightnessChange }: Brightnes
                 trackStyle={styles.trackStyle}
                 thumbStyle={styles.thumbStyle}
                 minimumTrackStyle={{
-                    backgroundColor: item.enabled
-                        ? item.color
-                        : Colors.GRAY
+                    backgroundColor: item.enabled ? item.color : Colors.GRAY
                 }}
             />
-            <Text style={styles.text}>
-                {Math.round(item.brightness || 0)}
-            </Text>
+            <Text style={styles.text}>{Math.round(item.brightness || 0)}</Text>
         </View>
     );
 }
@@ -66,5 +65,5 @@ const styles = StyleSheet.create({
         color: Colors.WHITE,
         fontFamily: 'sans-serif-thin',
         fontSize: 18
-    },
+    }
 });

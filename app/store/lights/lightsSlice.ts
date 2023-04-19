@@ -1,8 +1,7 @@
-import { createAsyncThunk, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 import { LightSourceData, Status } from '../../types/types';
-import { fetchLightsData } from './thunks';
-import LightService from '../../services/LightService';
+import { fetchLightsData, updateLight } from './lightsThunks';
 
 interface LightsState extends EntityState<LightSourceData> {
     status: Status;
@@ -13,29 +12,6 @@ const lightsAdapter = createEntityAdapter<LightSourceData>({
     selectId: (lightSource) => lightSource.id,
     // temporarily sort desc by notImplemented field
     sortComparer: (a, b) => Number(b.notImplemented) - Number(a.notImplemented)
-})
-
-export const updateLight = createAsyncThunk<
-    void,
-    { id: string, changes: Partial<LightSourceData> },
-    { rejectValue: string }
->('lights/updateLight', async ({ id, changes }, { dispatch, getState, rejectWithValue }) => {
-    try {
-        const light = selectLightById(getState() as RootState, id);
-        if (!light) {
-          throw new Error(`Light with id ${id} not found`);
-        }
-
-        dispatch(lightUpdated({ id: light.id, changes: { status: 'loading' } }));
-
-        await LightService.changeLight({ ...light, ...changes });
-
-        dispatch(lightUpdated({ id, changes: { ...changes, status: 'idle' } }));
-    } catch (error) {
-        dispatch(lightUpdated({ id, changes: { status: 'failed' } }));
-
-        return rejectWithValue('Error updating light');
-    }
 });
 
 export const lightsSlice = createSlice({
@@ -60,21 +36,23 @@ export const lightsSlice = createSlice({
             })
             .addCase(fetchLightsData.rejected, (state) => {
                 state.status = 'failed';
+            })
+            .addCase(updateLight.pending, (state, action) => {
+                lightsAdapter.updateOne(state, { id: action.meta.arg.id, changes: { status: 'loading' } })
+            })
+            .addCase(updateLight.fulfilled, (state, action) => {
+                lightsAdapter.updateOne(state, { id: action.meta.arg.id, changes: { status: 'idle', ...action.meta.arg.changes } })
+            })
+            .addCase(updateLight.rejected, (state, action) => {
+                lightsAdapter.updateOne(state, { id: action.meta.arg.id, changes: { status: 'failed' } })
             });
     },
 });
 
 export const { lightUpdated } = lightsSlice.actions;
 
-const lightSelectors = lightsAdapter.getSelectors<RootState>(
+export const lightSelectors = lightsAdapter.getSelectors<RootState>(
     (state) => state.lights
 )
-
-
-export const {
-    selectAll: selectAllLights,
-    selectById: selectLightById,
-    selectEntities: selectLightEntities,
-} = lightSelectors;
 
 export default lightsSlice.reducer;

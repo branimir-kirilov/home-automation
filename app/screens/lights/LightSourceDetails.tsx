@@ -3,11 +3,11 @@ import ColorPicker from 'react-native-wheel-color-picker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '../../navigation/HomeStackNavigator';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { updateLight } from '../../store/lights/lightsSlice';
+import { updateLight } from '../../store/lights/lightsThunks';
 import { Colors } from '../../utils/colors';
 import { useCallback, useMemo } from 'react';
 import LoadingOverlay from '../../components/LoadingOverlay';
-import { selectLightById } from '../../store/lights/lightsSlice';
+import { selectLightById } from '../../store/lights/lightSelectors';
 
 interface LightDetailsProps
     extends NativeStackScreenProps<HomeStackParamList, 'LightDetails'> {}

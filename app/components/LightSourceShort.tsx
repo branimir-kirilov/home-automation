@@ -2,7 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import PowerIcon from './PowerIcon';
 import { LightSourceData } from '../types/types';
 import { useAppDispatch } from '../hooks/hooks';
-import { updateLight } from '../store/lights/lightsSlice';
+import { updateLight } from '../store/lights/lightsThunks';
 import { Colors } from '../utils/colors';
 import LoadingOverlay from './LoadingOverlay';
 import BrightnessSlider from './BrightnessSlider';
@@ -12,7 +12,10 @@ interface LightSourceShortProps {
     onExpand: () => void;
 }
 
-export default function LightSourceShort({ item, onExpand }: LightSourceShortProps) {
+export default function LightSourceShort({
+    item,
+    onExpand
+}: LightSourceShortProps) {
     const dispatch = useAppDispatch();
 
     // TODO: Better way to do this?
@@ -70,7 +73,10 @@ export default function LightSourceShort({ item, onExpand }: LightSourceShortPro
                         onToggle={toggleEnabled}
                     />
                 </View>
-                <BrightnessSlider item={item} onBrightnessChange={onBrightnessChange} />
+                <BrightnessSlider
+                    item={item}
+                    onBrightnessChange={onBrightnessChange}
+                />
                 {item.status === 'loading' && <LoadingOverlay />}
             </TouchableOpacity>
         </View>
@@ -104,7 +110,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center'
     },
-  
+
     overlayContainer: {
         position: 'absolute',
         bottom: 0

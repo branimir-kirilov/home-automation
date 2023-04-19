@@ -4,9 +4,9 @@ import LightSourceShort from '../../components/LightSourceShort';
 import { LightSourceData } from '../../types/types';
 import { NavigationProp } from '@react-navigation/core';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { fetchLightsData } from '../../store/lights/thunks';
+import { fetchLightsData } from '../../store/lights/lightsThunks';
 import { Colors } from '../../utils/colors';
-import { selectAllLights } from '../../store/lights/lightsSlice';
+import { selectAllLights } from '../../store/lights/lightSelectors';
 
 interface HomeListProps {
     navigation: NavigationProp<any, any>;
