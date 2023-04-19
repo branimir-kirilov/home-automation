@@ -1,0 +1,13 @@
+{
+    "build": {
+      "production": {
+        "env": {
+          "API_URL": "https://api.production.com"
+        }
+      },
+      "test": {
+        "distribution": "internal",
+        "extends": "production"
+      }
+    }
+  }
