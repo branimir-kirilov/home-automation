@@ -1,9 +1,9 @@
-export interface HomeListData {
+export interface Hub {
     name: string;
     path: string;
 }
 
-export interface LightSourceData {
+export interface LightSource {
     id: string;
     name: string;
     path: string;
@@ -21,5 +21,8 @@ export type RGBColor = {
     b: number;
 };
 
-// TODO: Enum
-export type Status = 'idle' | 'loading' | 'failed';
+export enum Status {
+    IDLE = 'idle',
+    LOADING = 'loading',
+    FAILED = 'failed',
+}

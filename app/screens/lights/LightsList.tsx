@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { StyleSheet, FlatList, Text } from 'react-native';
 import LightSourceShort from '../../components/LightSourceShort';
-import { LightSourceData } from '../../types/types';
+import { LightSource } from '../../types/types';
 import { NavigationProp } from '@react-navigation/core';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import { fetchLightsData } from '../../store/lights/lightsThunks';
@@ -20,7 +20,7 @@ export default function List({ navigation }: HomeListProps) {
         dispatch(fetchLightsData());
     }, []);
 
-    const onExpand = (item: LightSourceData) => {
+    const onExpand = (item: LightSource) => {
         navigation.navigate('LightDetails', { id: item.id });
     };
 

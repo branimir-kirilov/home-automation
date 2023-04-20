@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import LightService from "../../services/LightService";
-import { LightSourceData } from "../../types/types";
+import { LightSource } from "../../types/types";
 import { RootState } from "../store";
 
 export const fetchLightsData = createAsyncThunk(
@@ -14,7 +14,7 @@ export const fetchLightsData = createAsyncThunk(
 
 export const updateLight = createAsyncThunk<
     void,
-    { id: string, changes: Partial<LightSourceData> },
+    { id: string, changes: Partial<LightSource> },
     { rejectValue: string }
 >('lights/updateLight', async ({ id, changes }, { dispatch, getState, rejectWithValue }) => {
     try {

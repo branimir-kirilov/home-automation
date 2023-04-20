@@ -1,14 +1,14 @@
 import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-import { LightSourceData, Status } from '../../types/types';
+import { LightSource, Status } from '../../types/types';
 import { fetchLightsData, updateLight } from './lightsThunks';
 
-interface LightsState extends EntityState<LightSourceData> {
+interface LightsState extends EntityState<LightSource> {
     status: Status;
     error: string | null;
 }
 
-const lightsAdapter = createEntityAdapter<LightSourceData>({
+const lightsAdapter = createEntityAdapter<LightSource>({
     selectId: (lightSource) => lightSource.id,
     // temporarily sort desc by notImplemented field
     sortComparer: (a, b) => Number(b.notImplemented) - Number(a.notImplemented)
@@ -19,7 +19,7 @@ export const lightsSlice = createSlice({
     initialState: lightsAdapter.getInitialState<LightsState>({
         ids: [],
         entities: {},
-        status: 'idle',
+        status: Status.IDLE,
         error: null,
     }),
     reducers: {
@@ -28,23 +28,23 @@ export const lightsSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchLightsData.pending, (state) => {
-                state.status = 'loading';
+                state.status = Status.LOADING;
             })
             .addCase(fetchLightsData.fulfilled, (state, action) => {
-                state.status = 'idle';
+                state.status = Status.IDLE;
                 lightsAdapter.upsertMany(state, action.payload);
             })
             .addCase(fetchLightsData.rejected, (state) => {
-                state.status = 'failed';
+                state.status = Status.FAILED;
             })
             .addCase(updateLight.pending, (state, action) => {
-                lightsAdapter.updateOne(state, { id: action.meta.arg.id, changes: { status: 'loading' } })
+                lightsAdapter.updateOne(state, { id: action.meta.arg.id, changes: { status: Status.LOADING } })
             })
             .addCase(updateLight.fulfilled, (state, action) => {
-                lightsAdapter.updateOne(state, { id: action.meta.arg.id, changes: { status: 'idle', ...action.meta.arg.changes } })
+                lightsAdapter.updateOne(state, { id: action.meta.arg.id, changes: { status: Status.IDLE, ...action.meta.arg.changes } })
             })
             .addCase(updateLight.rejected, (state, action) => {
-                lightsAdapter.updateOne(state, { id: action.meta.arg.id, changes: { status: 'failed' } })
+                lightsAdapter.updateOne(state, { id: action.meta.arg.id, changes: { status: Status.FAILED } })
             });
     },
 });

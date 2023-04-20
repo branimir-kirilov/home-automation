@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import PowerIcon from './PowerIcon';
-import { LightSourceData } from '../types/types';
+import { LightSource, Status } from '../types/types';
 import { useAppDispatch } from '../hooks/hooks';
 import { updateLight } from '../store/lights/lightsThunks';
 import { Colors } from '../utils/colors';
@@ -8,7 +8,7 @@ import LoadingOverlay from './LoadingOverlay';
 import BrightnessSlider from './BrightnessSlider';
 
 interface LightSourceShortProps {
-    item: LightSourceData;
+    item: LightSource;
     onExpand: () => void;
 }
 
@@ -50,7 +50,7 @@ export default function LightSourceShort({
     return (
         <View
             pointerEvents={
-                item.notImplemented || item.status === 'loading'
+                item.notImplemented || item.status === Status.LOADING
                     ? 'none'
                     : 'auto'
             }
@@ -77,7 +77,7 @@ export default function LightSourceShort({
                     item={item}
                     onBrightnessChange={onBrightnessChange}
                 />
-                {item.status === 'loading' && <LoadingOverlay />}
+                {item.status === Status.LOADING && <LoadingOverlay />}
             </TouchableOpacity>
         </View>
     );

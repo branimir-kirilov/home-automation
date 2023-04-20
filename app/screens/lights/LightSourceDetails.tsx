@@ -8,6 +8,7 @@ import { Colors } from '../../utils/colors';
 import { useCallback, useMemo } from 'react';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import { selectLightById } from '../../store/lights/lightSelectors';
+import { Status } from '../../types/types';
 
 interface LightDetailsProps
     extends NativeStackScreenProps<HomeStackParamList, 'LightDetails'> {}
@@ -18,7 +19,7 @@ export default function LightDetails({ route }: LightDetailsProps) {
     const item = useAppSelector((state) => selectLightById(state, id));
 
     const onColorChangeComplete = useCallback((color: string) => {
-        if (item && item.status === 'idle') {
+        if (item && item.status === Status.IDLE) {
             dispatch(updateLight({ id: item.id, changes: { color } }));
         }
     }, [item, dispatch, updateLight]);
@@ -37,7 +38,7 @@ export default function LightDetails({ route }: LightDetailsProps) {
         <View style={styles.container}>
             {item && (
                 <>
-                    {item.status === 'loading' && <LoadingOverlay />}
+                    {item.status === Status.LOADING && <LoadingOverlay />}
                     <View style={styles.header}>
                         <Text style={styles.title}>{item.name}</Text>
                     </View>

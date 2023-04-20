@@ -1,6 +1,6 @@
-import { LightSourceData } from '../types/types';
+import { LightSource, Status } from '../types/types';
 
-export const lightsListData: LightSourceData[] = [
+export const lightsListData: LightSource[] = [
     {
         id: 'desk',
         name: 'Desk',
@@ -8,7 +8,7 @@ export const lightsListData: LightSourceData[] = [
         color: '#ffff00',
         brightness: 100,
         enabled: true,
-        status: 'idle'
+        status: Status.IDLE,
     },
     {
         id: 'ceiling',
@@ -16,7 +16,7 @@ export const lightsListData: LightSourceData[] = [
         path: '/ceiling',
         color: '#00ff00',
         brightness: 0,
-        status: 'idle',
+        status: Status.IDLE,
         enabled: false
     },
     {
@@ -26,7 +26,7 @@ export const lightsListData: LightSourceData[] = [
         color: '#00ff00',
         brightness: 0,
         enabled: false,
-        status: 'idle',
+        status: Status.IDLE,
         notImplemented: true
     },
     {
@@ -36,7 +36,7 @@ export const lightsListData: LightSourceData[] = [
         color: '#00ff00',
         brightness: 0,
         enabled: false,
-        status: 'idle',
+        status: Status.IDLE,
         notImplemented: true
     },
     {
@@ -46,7 +46,7 @@ export const lightsListData: LightSourceData[] = [
         color: '#00ff00',
         brightness: 0,
         enabled: false,
-        status: 'idle',
+        status: Status.IDLE,
         notImplemented: true
     },
     {
@@ -56,7 +56,7 @@ export const lightsListData: LightSourceData[] = [
         color: '#00ff00',
         brightness: 0,
         enabled: false,
-        status: 'idle',
+        status: Status.IDLE,
         notImplemented: true
     }
 ];

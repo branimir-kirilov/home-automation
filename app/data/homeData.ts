@@ -1,6 +1,6 @@
-import { HomeListData } from '../types/types';
+import { Hub } from '../types/types';
 
-export const homeControlData: HomeListData[] = [
+export const homeControlData: Hub[] = [
     {
         name: 'Lights',
         path: 'LightsList'

@@ -1,12 +1,12 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Slider } from '@miblanchard/react-native-slider';
 import { StyleSheet, View, Text } from 'react-native';
-import { LightSourceData } from '../types/types';
+import { LightSource } from '../types/types';
 import { Colors } from '../utils/colors';
 
 interface BrightnessSliderProps {
     onBrightnessChange: (value: number[]) => void;
-    item: LightSourceData;
+    item: LightSource;
 }
 
 export default function BrightnessSlider({
