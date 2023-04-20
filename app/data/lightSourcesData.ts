@@ -8,7 +8,7 @@ export const lightsListData: LightSource[] = [
         color: '#ffff00',
         brightness: 100,
         enabled: true,
-        status: Status.IDLE,
+        status: Status.IDLE
     },
     {
         id: 'ceiling',
