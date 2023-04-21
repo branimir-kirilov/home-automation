@@ -13,9 +13,9 @@ export default class LightService {
         );
     }
 
-    // POST @ {host}/{name}/rgb
+    // POST @ {host}/{lights}/{lightId}
     static changeLight(data: LightSource): Promise<Response> {
-        const url = `${WEMOS_URL}${data.path}/rgb`;
+        const url = `${WEMOS_URL}/lights/${data.id}`;
 
         const req: RequestInit = {
             method: 'POST',

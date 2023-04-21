@@ -2,7 +2,6 @@ import {
     configureStore,
     ThunkAction,
     Action,
-    Middleware
 } from '@reduxjs/toolkit';
 import { errorToastMiddleware } from './middleware';
 import { rootReducer } from './rootReducer';

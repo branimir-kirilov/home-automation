@@ -1,12 +1,12 @@
 export interface Hub {
     name: string;
-    path: string;
+    component: string;
+    enabled?: boolean;
 }
 
 export interface LightSource {
     id: string;
     name: string;
-    path: string;
     color: string;
     brightness: number;
     enabled: boolean;

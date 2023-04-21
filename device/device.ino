@@ -72,7 +72,7 @@ void sendBadRequestResponse()
     server.send(400, "text/plain", "Bad request");
 }
 
-void onRgb()
+void handleLightUpdate()
 {
     // Check if body received
     if (server.hasArg("plain") == false)
@@ -121,7 +121,7 @@ void setup()
     Serial.println(WiFi.localIP());
 
     server.on(F("/"), onHome);
-    server.on("/desk/rgb", HTTP_POST, onRgb);
+    server.on("/lights/desk", HTTP_POST, handleLightUpdate);
     server.begin();
     Serial.println("HTTP server started");
 }

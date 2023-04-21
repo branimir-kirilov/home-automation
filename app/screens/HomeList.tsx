@@ -10,8 +10,8 @@ interface HomeListProps {
 }
 
 export default function HomeList({ navigation }: HomeListProps) {
-    const onNavigation = (path: string) => {
-        navigation.navigate(path);
+    const onNavigation = (component: string) => {
+        navigation.navigate(component);
     };
 
     return (
@@ -26,7 +26,7 @@ export default function HomeList({ navigation }: HomeListProps) {
             renderItem={(item) => (
                 <HomeItem
                     name={item.item.name}
-                    onNavigation={() => onNavigation(item.item.path)}
+                    onNavigation={() => onNavigation(item.item.component)}
                 />
             )}
             keyExtractor={(item) => item.name}

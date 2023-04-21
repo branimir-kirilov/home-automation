@@ -3,18 +3,18 @@ import { Hub } from '../types/types';
 export const homeControlData: Hub[] = [
     {
         name: 'Lights',
-        path: 'LightsList'
+        component: 'LightsList'
     },
     {
         name: 'Heating',
-        path: 'HeatingList'
+        component: 'HeatingList'
     },
     {
         name: 'Blinds',
-        path: 'BlindsList'
+        component: 'BlindsList'
     },
     {
         name: 'Plants',
-        path: 'PlantsList'
+        component: 'PlantsList'
     }
 ];
