@@ -16,7 +16,7 @@ export const updateLight = createAsyncThunk<
     void,
     { id: string, changes: Partial<LightSource> },
     { rejectValue: string }
->('lights/updateLight', async ({ id, changes }, { dispatch, getState, rejectWithValue }) => {
+>('lights/updateLight', async ({ id, changes }, { getState, rejectWithValue }) => {
     try {
         const state = getState() as RootState;
         const light = state.lights.entities[id];

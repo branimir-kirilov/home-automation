@@ -6,14 +6,14 @@ import { NavigationProp } from '@react-navigation/core';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import { fetchLightsData } from '../../store/lights/lightsThunks';
 import { Colors } from '../../utils/colors';
-import { selectAllLights } from '../../store/lights/lightSelectors';
+import { lightSelectors } from '../../store/lights/lightsSlice';
 
-interface HomeListProps {
+interface LightsListProps {
     navigation: NavigationProp<any, any>;
 }
 
-export default function List({ navigation }: HomeListProps) {
-    const items = useAppSelector(selectAllLights);
+export default function LightsList({ navigation }: LightsListProps) {
+    const items = useAppSelector(lightSelectors.selectAll);
     const dispatch = useAppDispatch();
 
     useEffect(() => {
