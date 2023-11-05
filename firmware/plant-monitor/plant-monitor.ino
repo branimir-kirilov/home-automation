@@ -17,17 +17,16 @@
 #define MAX_LINES 3
 #define PIN_RESET 255
 #define DC_JUMPER 0
-#define DEEP_SLEEP_INTERVAL 3600e6
+#define DEEP_SLEEP_INTERVAL 3600e6 // 3600 sec
 
 const int SensorPin = A0;
 const int AirValue = 674;
 const int WaterValue = 490;
+int timestamp;
+int hours, minutes, seconds;
 
 String logLines[MAX_LINES];
 int currentLine = 0;
-
-int timestamp;
-int hours, minutes, seconds;
 
 String uid;
 String databasePath;
@@ -52,23 +51,14 @@ void initializeOledAndShowStartupScreen() {
     for (;;);
   }
   delay(2000);
-  display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0, 10);
-  logMessage("Starting!...");
+  logMessage("Waking up!");
   delay(2000);
-  display.clearDisplay();
 }
 
-void setup() {
-  Serial.begin(115200);
-  Serial.setTimeout(2000);
-  // Wait for serial to initialize.
-  while (!Serial) { }
-
-  initializeOledAndShowStartupScreen();
-
+void setupWifi() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   logMessage("Connecting to WiFi!");
   while (WiFi.status() != WL_CONNECTED) {
@@ -76,8 +66,11 @@ void setup() {
     delay(300);
   }
   logMessage("WiFi connected!");
+}
 
-  logMessage("Starting Firebase connection");
+void configureFirebase() {
+  logMessage("Initializing Firebase");
+
   config.api_key = API_KEY;
   auth.user.email = USER_EMAIL;
   auth.user.password = USER_PASSWORD;
@@ -88,25 +81,46 @@ void setup() {
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
   Firebase.setDoubleDigits(5);
+}
 
-  while (!Firebase.ready()) {}
-
+void sendDataToRTDB() {
+  // Collect metrics from sensor
   int sensorReading = getSensorReading();
   int moisture = getMoisturePercent(sensorReading);
-  logMessage("Getting User UID");
+  
+  // Getting uid from auth
   uid = auth.token.uid.c_str();
-  logMessage("User UID: %d\n", uid);
+  // logMessage("User UID: %d\n", uid);
+  
+  // Database path
   databasePath = "/UsersData/" + uid + "/readings";
-  timestamp = getTime();
+  timestamp = getEpochTime();
   parentPath = databasePath + "/" + String(timestamp);
+
+  // Setting JSON data
   json.set(moisturePath.c_str(), String(moisture));
   json.set(sensorReadingPath.c_str(), String(sensorReading));
   json.set(timePath, String(timestamp));
-  logMessage("Moisture: %d% \n", moisture);
-  logMessage("Sensor Reading: %d \n", sensorReading);
-  logMessage("Set json: %s \n", Firebase.RTDB.setJSON(&fbdo, parentPath.c_str(), &json) ? "ok" : fbdo.errorReason().c_str());
-  
-  // Sleep for 5 seconds, TODO, move to constant
+  logMessage("RTDB status: %s \n", Firebase.RTDB.setJSON(&fbdo, parentPath.c_str(), &json) ? "ok" : fbdo.errorReason().c_str());
+}
+
+void setup() {
+  Serial.begin(115200);
+  Serial.setTimeout(2000);
+  while (!Serial) { }
+
+  initializeOledAndShowStartupScreen();
+
+  setupWifi();
+
+  configureFirebase();
+
+  while (!Firebase.ready()) {
+    logMessage("Firebase not ready yet...");
+  }
+
+  sendDataToRTDB();
+ 
   ESP.deepSleep(DEEP_SLEEP_INTERVAL);
 }
 
@@ -143,7 +157,7 @@ void loop() {
   // No loop
 }
 
-unsigned long getTime() {
+unsigned long getEpochTime() {
   timeClient.update();
   unsigned long now = timeClient.getEpochTime();
   return now;
@@ -151,8 +165,7 @@ unsigned long getTime() {
 
 int getSensorReading() {
   int sensorReading = analogRead(SensorPin);
-  Serial.print("SensorReading: ");
-  Serial.println(sensorReading);
+  logMessage("Sensor: %d \n", sensorReading);
   return sensorReading;
 }
 
@@ -163,7 +176,6 @@ int getMoisturePercent(int sensorReading) {
   } else if (soilMoisturePercent < 0) {
     soilMoisturePercent = 0;
   }
-  Serial.print("Moisture: ");
-  Serial.println(soilMoisturePercent);
+  logMessage("Moisture: %d %% \n", soilMoisturePercent);
   return soilMoisturePercent;
 }
