@@ -17,7 +17,7 @@
 #define MAX_LINES 3
 #define PIN_RESET 255
 #define DC_JUMPER 0
-#define DEEP_SLEEP_INTERVAL 5e6
+#define DEEP_SLEEP_INTERVAL 3600e6
 
 const int SensorPin = A0;
 const int AirValue = 674;
@@ -69,9 +69,6 @@ void setup() {
 
   initializeOledAndShowStartupScreen();
 
-  // WiFi.persistent(false);
-  // WiFi.mode(WIFI_OFF);
-  // WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   logMessage("Connecting to WiFi!");
   while (WiFi.status() != WL_CONNECTED) {
