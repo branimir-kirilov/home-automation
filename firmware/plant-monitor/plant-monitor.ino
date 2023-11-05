@@ -17,6 +17,7 @@
 #define MAX_LINES 3
 #define PIN_RESET 255
 #define DC_JUMPER 0
+#define DEEP_SLEEP_INTERVAL 5e6
 
 const int SensorPin = A0;
 const int AirValue = 674;
@@ -25,10 +26,8 @@ const int WaterValue = 490;
 String logLines[MAX_LINES];
 int currentLine = 0;
 
-unsigned long sendDataPrevMillis = 0;
-unsigned long timerDelay = 30 * 60 * 1000;
-unsigned long count = 0;
 int timestamp;
+int hours, minutes, seconds;
 
 String uid;
 String databasePath;
@@ -57,15 +56,22 @@ void initializeOledAndShowStartupScreen() {
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0, 10);
-  display.println("Display initialized!");
-  display.display();
+  logMessage("Starting!...");
   delay(2000);
   display.clearDisplay();
 }
 
 void setup() {
   Serial.begin(115200);
+  Serial.setTimeout(2000);
+  // Wait for serial to initialize.
+  while (!Serial) { }
+
   initializeOledAndShowStartupScreen();
+
+  // WiFi.persistent(false);
+  // WiFi.mode(WIFI_OFF);
+  // WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   logMessage("Connecting to WiFi!");
   while (WiFi.status() != WL_CONNECTED) {
@@ -73,6 +79,7 @@ void setup() {
     delay(300);
   }
   logMessage("WiFi connected!");
+
   logMessage("Starting Firebase connection");
   config.api_key = API_KEY;
   auth.user.email = USER_EMAIL;
@@ -84,10 +91,29 @@ void setup() {
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
   Firebase.setDoubleDigits(5);
+
+  while (!Firebase.ready()) {}
+
+  int sensorReading = getSensorReading();
+  int moisture = getMoisturePercent(sensorReading);
+  logMessage("Getting User UID");
+  uid = auth.token.uid.c_str();
+  logMessage("User UID: %d\n", uid);
+  databasePath = "/UsersData/" + uid + "/readings";
+  timestamp = getTime();
+  parentPath = databasePath + "/" + String(timestamp);
+  json.set(moisturePath.c_str(), String(moisture));
+  json.set(sensorReadingPath.c_str(), String(sensorReading));
+  json.set(timePath, String(timestamp));
+  logMessage("Moisture: %d% \n", moisture);
+  logMessage("Sensor Reading: %d \n", sensorReading);
+  logMessage("Set json: %s \n", Firebase.RTDB.setJSON(&fbdo, parentPath.c_str(), &json) ? "ok" : fbdo.errorReason().c_str());
+  
+  // Sleep for 5 seconds, TODO, move to constant
+  ESP.deepSleep(DEEP_SLEEP_INTERVAL);
 }
 
-int hours, minutes, seconds;
-
+// Appends a (formatted) message to the display and to serial output
 void logMessage(const char* format, ...) {
   va_list args;
   va_start(args, format);
@@ -97,7 +123,12 @@ void logMessage(const char* format, ...) {
   seconds = timeClient.getSeconds();
   char buffer[128];
   vsnprintf(buffer, sizeof(buffer), format, args);
-  String logMessage = "[" + String(hours) + ":" + String(minutes) + "] " + String(buffer);
+  
+  // Format hours and minutes with leading zeros
+  String formattedHours = (hours < 10) ? "0" + String(hours) : String(hours);
+  String formattedMinutes = (minutes < 10) ? "0" + String(minutes) : String(minutes);
+
+  String logMessage = "[" + formattedHours + ":" + formattedMinutes + "] " + String(buffer);
   currentLine = (currentLine + 1) % MAX_LINES;
   logLines[currentLine] = logMessage;
   display.clearDisplay();
@@ -112,23 +143,7 @@ void logMessage(const char* format, ...) {
 }
 
 void loop() {
-  if (Firebase.ready() && (millis() - sendDataPrevMillis > timerDelay || sendDataPrevMillis == 0)) {
-    int sensorReading = getSensorReading();
-    int moisture = getMoisturePercent(sensorReading);
-    logMessage("Getting User UID");
-    uid = auth.token.uid.c_str();
-    logMessage("User UID: %d\n", uid);
-    databasePath = "/UsersData/" + uid + "/readings";
-    sendDataPrevMillis = millis();
-    timestamp = getTime();
-    parentPath = databasePath + "/" + String(timestamp);
-    json.set(moisturePath.c_str(), String(moisture));
-    json.set(sensorReadingPath.c_str(), String(sensorReading));
-    json.set(timePath, String(timestamp));
-    logMessage("Moisture %d\n", moisture);
-    logMessage("Sensor Reading %d\n", sensorReading);
-    logMessage("Set json... %s\n", Firebase.RTDB.setJSON(&fbdo, parentPath.c_str(), &json) ? "ok" : fbdo.errorReason().c_str());
-  }
+  // No loop
 }
 
 unsigned long getTime() {
