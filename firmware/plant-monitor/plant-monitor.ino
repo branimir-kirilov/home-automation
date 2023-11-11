@@ -114,14 +114,6 @@ void setup() {
   setupWifi();
 
   configureFirebase();
-
-  while (!Firebase.ready()) {
-    logMessage("Firebase not ready yet...");
-  }
-
-  sendDataToRTDB();
- 
-  ESP.deepSleep(DEEP_SLEEP_INTERVAL);
 }
 
 // Appends a (formatted) message to the display and to serial output
@@ -129,7 +121,7 @@ void logMessage(const char* format, ...) {
   va_list args;
   va_start(args, format);
   timeClient.update();
-  hours = timeClient.getHours();
+  hours = timeClient.getHours() + 2;
   minutes = timeClient.getMinutes();
   seconds = timeClient.getSeconds();
   char buffer[128];
@@ -139,7 +131,7 @@ void logMessage(const char* format, ...) {
   String formattedHours = (hours < 10) ? "0" + String(hours) : String(hours);
   String formattedMinutes = (minutes < 10) ? "0" + String(minutes) : String(minutes);
 
-  String logMessage = "[" + formattedHours + ":" + formattedMinutes + "] " + String(buffer);
+  String logMessage = formattedHours + ":" + formattedMinutes + "> " + String(buffer);
   currentLine = (currentLine + 1) % MAX_LINES;
   logLines[currentLine] = logMessage;
   display.clearDisplay();
@@ -154,12 +146,15 @@ void logMessage(const char* format, ...) {
 }
 
 void loop() {
-  // No loop
+  if (Firebase.ready()) {
+    sendDataToRTDB();
+    ESP.deepSleep(DEEP_SLEEP_INTERVAL);  
+  }
 }
 
 unsigned long getEpochTime() {
   timeClient.update();
-  unsigned long now = timeClient.getEpochTime();
+  unsigned long now = timeClient.getEpochTime(); 
   return now;
 }
 
@@ -176,6 +171,6 @@ int getMoisturePercent(int sensorReading) {
   } else if (soilMoisturePercent < 0) {
     soilMoisturePercent = 0;
   }
-  logMessage("Moisture: %d %% \n", soilMoisturePercent);
+  logMessage("Moist.: %d%% \n", soilMoisturePercent);
   return soilMoisturePercent;
 }
