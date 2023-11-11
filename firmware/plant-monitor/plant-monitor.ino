@@ -17,7 +17,7 @@
 #define MAX_LINES 3
 #define PIN_RESET 255
 #define DC_JUMPER 0
-#define DEEP_SLEEP_INTERVAL 3600e6 // 3600 sec
+#define DEEP_SLEEP_INTERVAL 10800e6 // 3 * 60 * 60 sec = 3h
 
 const int SensorPin = A0;
 const int AirValue = 674;
