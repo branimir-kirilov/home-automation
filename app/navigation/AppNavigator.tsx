@@ -4,10 +4,18 @@ import HomeListStackNavigator from './HomeStackNavigator';
 import SettingsScreen from '../screens/Settings';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../utils/colors';
+import { useAppSelector } from '../hooks/hooks';
+import { selectUser } from '../store/auth/authSlice';
+import LoginScreen from '../screens/LoginScreen';
 
 const Tab = createBottomTabNavigator();
 
 const AppNavigator = () => {
+    const user = useAppSelector(selectUser);
+    if (!user) {
+        return <LoginScreen />;
+    }
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({

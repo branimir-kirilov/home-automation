@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import { fetchLightsData } from '../../store/lights/lightsThunks';
 import { Colors } from '../../utils/colors';
 import { lightSelectors } from '../../store/lights/lightsSlice';
+import { selectUser } from '../../store/auth/authSlice';
 
 interface LightsListProps {
     navigation: NavigationProp<any, any>;
@@ -29,7 +30,10 @@ export default function LightsList({ navigation }: LightsListProps) {
             <FlatList
                 data={items}
                 renderItem={({ item }) => (
-                    <LightSourceShort item={item} onExpand={() => onExpand(item)} />
+                    <LightSourceShort
+                        item={item}
+                        onExpand={() => onExpand(item)}
+                    />
                 )}
                 keyExtractor={(item) => item.name}
                 contentContainerStyle={styles.flatList}
