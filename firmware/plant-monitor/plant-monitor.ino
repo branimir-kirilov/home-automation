@@ -7,16 +7,10 @@
 #include <WiFiUdp.h>
 #include <addons/TokenHelper.h>
 #include <addons/RTDBHelper.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
 #include "secrets.h"
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define MAX_LINES 3
-#define PIN_RESET 255
-#define DC_JUMPER 0
 #define DEEP_SLEEP_INTERVAL 10800e6 // 3 * 60 * 60 sec = 3h
 
 const int SensorPin = A0;
@@ -25,14 +19,14 @@ const int WaterValue = 490;
 int timestamp;
 int hours, minutes, seconds;
 
-String logLines[MAX_LINES];
-int currentLine = 0;
-
 String uid;
 String databasePath;
 String parentPath;
 String moisturePath = "/moisture";
 String sensorReadingPath = "/sensor";
+String temperaturePath = "/temperature";
+String humidityPath = "/humidity";
+String pressurePath = "/pressure";
 String timePath = "/timestamp";
 
 WiFiUDP ntpUDP;
@@ -43,33 +37,28 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+Adafruit_BME280 bme;
 
-void initializeOledAndShowStartupScreen() {
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println(F("SSD1306 allocation failed"));
-    for (;;);
+void setupBME() {
+  bool status = bme.begin(0x76);  
+  if (!status) {
+    Serial.println("Could not find a valid BME280 sensor, check wiring!");
+    while (1);
   }
-  delay(2000);
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 10);
-  logMessage("Waking up!");
-  delay(2000);
 }
 
 void setupWifi() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  logMessage("Connecting to WiFi!");
+  Serial.println("Connecting to WiFi!");
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
     delay(300);
   }
-  logMessage("WiFi connected!");
+  Serial.println("WiFi connected!");
 }
 
 void configureFirebase() {
-  logMessage("Initializing Firebase");
+  Serial.println("Initializing Firebase");
 
   config.api_key = API_KEY;
   auth.user.email = USER_EMAIL;
@@ -90,18 +79,34 @@ void sendDataToRTDB() {
   
   // Getting uid from auth
   uid = auth.token.uid.c_str();
-  // logMessage("User UID: %d\n", uid);
   
   // Database path
-  databasePath = "/UsersData/" + uid + "/readings";
+  databasePath = "/UsersData/" + uid + "/" + DEVICE_ID + "/readings/";
   timestamp = getEpochTime();
   parentPath = databasePath + "/" + String(timestamp);
 
+  Serial.print("Temperature = ");
+  Serial.print(bme.readTemperature());
+  Serial.println(" *C");
+  
+  Serial.print("Pressure = ");
+  Serial.print(bme.readPressure() / 100.0F);
+  Serial.println(" hPa");
+
+  Serial.print("Humidity = ");
+  Serial.print(bme.readHumidity());
+  Serial.println(" %");
+
   // Setting JSON data
+  // Soil
   json.set(moisturePath.c_str(), String(moisture));
   json.set(sensorReadingPath.c_str(), String(sensorReading));
-  json.set(timePath, String(timestamp));
-  logMessage("RTDB status: %s \n", Firebase.RTDB.setJSON(&fbdo, parentPath.c_str(), &json) ? "ok" : fbdo.errorReason().c_str());
+  // Ambient
+  json.set(temperaturePath.c_str(), String(bme.readTemperature()));
+  json.set(pressurePath.c_str(), String(bme.readPressure() / 100.0F));
+  json.set(humidityPath.c_str(), String(bme.readHumidity()));
+  
+  Serial.printf("RTDB status: %s \n", Firebase.RTDB.setJSON(&fbdo, parentPath.c_str(), &json) ? "ok" : fbdo.errorReason().c_str());
 }
 
 void setup() {
@@ -109,46 +114,17 @@ void setup() {
   Serial.setTimeout(2000);
   while (!Serial) { }
 
-  initializeOledAndShowStartupScreen();
+  setupBME();
 
   setupWifi();
 
   configureFirebase();
 }
 
-// Appends a (formatted) message to the display and to serial output
-void logMessage(const char* format, ...) {
-  va_list args;
-  va_start(args, format);
-  timeClient.update();
-  hours = timeClient.getHours() + 2;
-  minutes = timeClient.getMinutes();
-  seconds = timeClient.getSeconds();
-  char buffer[128];
-  vsnprintf(buffer, sizeof(buffer), format, args);
-  
-  // Format hours and minutes with leading zeros
-  String formattedHours = (hours < 10) ? "0" + String(hours) : String(hours);
-  String formattedMinutes = (minutes < 10) ? "0" + String(minutes) : String(minutes);
-
-  String logMessage = formattedHours + ":" + formattedMinutes + "> " + String(buffer);
-  currentLine = (currentLine + 1) % MAX_LINES;
-  logLines[currentLine] = logMessage;
-  display.clearDisplay();
-  for (int i = 0; i < MAX_LINES; i++) {
-    int lineIndex = (currentLine - i + MAX_LINES) % MAX_LINES;
-    display.setCursor(0, i * 16);
-    display.println(logLines[lineIndex]);
-  }
-  display.display();
-  va_end(args);
-  Serial.println(logMessage);
-}
-
 void loop() {
   if (Firebase.ready()) {
     sendDataToRTDB();
-    ESP.deepSleep(DEEP_SLEEP_INTERVAL);  
+    ESP.deepSleep(DEEP_SLEEP_INTERVAL);
   }
 }
 
@@ -160,7 +136,7 @@ unsigned long getEpochTime() {
 
 int getSensorReading() {
   int sensorReading = analogRead(SensorPin);
-  logMessage("Sensor: %d \n", sensorReading);
+  Serial.printf("Sensor: %d \n", sensorReading);
   return sensorReading;
 }
 
@@ -171,6 +147,6 @@ int getMoisturePercent(int sensorReading) {
   } else if (soilMoisturePercent < 0) {
     soilMoisturePercent = 0;
   }
-  logMessage("Moist.: %d%% \n", soilMoisturePercent);
+  Serial.printf("Moist.: %d%% \n", soilMoisturePercent);
   return soilMoisturePercent;
 }
