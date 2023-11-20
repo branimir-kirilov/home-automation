@@ -26,18 +26,17 @@ type UserData = {
     [key: string]: Reading;
 };
 
+// TODO:
+// Identification for different plants
+// More beautiful and interactive charts that allow history inspection and cool statistics
 export default function PlantsList() {
     const [userReadings, setUserReadings] = useState<UserData | null>(null);
 
     const user = useAppSelector(selectUser);
-    const { width } = useWindowDimensions();
 
     useEffect(() => {
         const dataRef = query(
-            ref(
-                db,
-                `UsersData/${user?.uid}/144256e8-0726-4344-82db-d67c79d4e6c4/readings`
-            ),
+            ref(db, `UsersData/${user?.uid}/${process.env.DEVICE_ID}/readings`),
             limitToLast(LIMIT)
         );
 
