@@ -1,37 +1,43 @@
 import { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, useWindowDimensions, Text } from 'react-native';
-import { NavigationProp } from '@react-navigation/core';
+import {
+    StyleSheet,
+    View,
+    useWindowDimensions,
+    Text,
+    ScrollView
+} from 'react-native';
 import { useAppSelector } from '../../hooks/hooks';
 import { selectUser } from '../../store/auth/authSlice';
 import { get, limitToLast, query, ref } from 'firebase/database';
 import { db } from '../../config/firebaseConfig';
-import { LineChart } from 'react-native-chart-kit';
+import LineChartWrapper from './LineChartWrapper';
 
 const LIMIT = 30;
-
-interface PlantsListProps {
-    navigation: NavigationProp<any, any>;
-}
 
 type Reading = {
     moisture: number;
     sensor: number;
-    timestamp: number;
+    temperature: number;
+    humidity: number;
+    pressure: number;
 };
 
 type UserData = {
     [key: string]: Reading;
 };
 
-export default function PlantsList({ navigation }: PlantsListProps) {
+export default function PlantsList() {
     const [userReadings, setUserReadings] = useState<UserData | null>(null);
 
     const user = useAppSelector(selectUser);
-    const { height, width } = useWindowDimensions();
+    const { width } = useWindowDimensions();
 
     useEffect(() => {
         const dataRef = query(
-            ref(db, `UsersData/${user?.uid}/readings`),
+            ref(
+                db,
+                `UsersData/${user?.uid}/144256e8-0726-4344-82db-d67c79d4e6c4/readings`
+            ),
             limitToLast(LIMIT)
         );
 
@@ -51,71 +57,60 @@ export default function PlantsList({ navigation }: PlantsListProps) {
 
     const getData = () => {
         const timestamps = Object.keys(userReadings || {});
-        const readings: number[] = [];
+        const moistures: number[] = [];
+        const temps: number[] = [];
+        const pressures: number[] = [];
+        const humidities: number[] = [];
 
         if (userReadings) {
             timestamps.forEach((timestamp) => {
                 if (userReadings[timestamp]) {
-                    readings.push(userReadings[timestamp].moisture);
+                    moistures.push(userReadings[timestamp].moisture);
+                    temps.push(userReadings[timestamp].temperature);
+                    pressures.push(userReadings[timestamp].pressure);
+                    humidities.push(userReadings[timestamp].humidity);
                 }
             });
         }
 
-        return { timestamps, readings };
+        return [
+            { key: 'Moisture', dataset: moistures, label: '%' },
+            { key: 'Temperature', dataset: temps, label: 'C' },
+            { key: 'Humidity', dataset: humidities, label: '%' },
+            { key: 'Pressure', dataset: pressures, label: 'hPa' }
+        ];
     };
 
-    const lastReading = useMemo(() => {
+    const lastTimestamp = useMemo(() => {
         const timestamps = Object.keys(userReadings || {});
-        const lastTimestamp = timestamps[timestamps.length - 1];
-        return userReadings?.[lastTimestamp] || null;
+        return Number(timestamps[timestamps.length - 1]);
     }, [userReadings]);
 
-    const data = {
-        labels: [],
-        datasets: [
-            {
-                data: getData().readings,
-                color: () => 'blue',
-                withDots: false,
-                strokeWidth: 5
-            }
-        ]
-    };
-
     return (
-        <View style={styles.container}>
-            {userReadings && user?.uid && (
-                <LineChart
-                    data={data}
-                    width={width}
-                    height={450}
-                    yAxisLabel="%"
-                    fromZero={true}
-                    fromNumber={100}
-                    yAxisInterval={5}
-                    yAxisSuffix=""
-                    chartConfig={{
-                        backgroundGradientFrom: '#000000',
-                        backgroundGradientFromOpacity: 0.5,
-                        backgroundGradientTo: '#000000',
-                        backgroundGradientToOpacity: 1,
-                        color: () => `white`,
-                        useShadowColorFromDataset: true,
-                        decimalPlaces: 0,
-                        scrollableDotStrokeWidth: 150
-                    }}
-                    withInnerLines={false}
-                    withOuterLines={true}
-                    withDots={false}
-                    withShadow={true}
-                    withScrollableDot={true}
-                    withVerticalLabels={true}
-                    withHorizontalLines={true}
-                    verticalLabelRotation={0}
-                    withHorizontalLabels={true}
-                    bezier
-                />
-            )}
+        <ScrollView style={styles.container}>
+            {userReadings &&
+                user?.uid &&
+                lastTimestamp &&
+                getData().map((data) => {
+                    return (
+                        <>
+                            <Text style={styles.text}>{data.key}</Text>
+                            <LineChartWrapper
+                                key={data.key}
+                                data={{
+                                    labels: [],
+                                    datasets: [
+                                        {
+                                            data: data.dataset,
+                                            color: () => 'blue'
+                                        }
+                                    ]
+                                }}
+                                yAxisLabel={data.label}
+                            />
+                        </>
+                    );
+                })}
             <View
                 style={{
                     flexDirection: 'column',
@@ -126,24 +121,34 @@ export default function PlantsList({ navigation }: PlantsListProps) {
             >
                 <Text style={styles.text}>Last measurement: </Text>
                 <Text style={styles.text}>
-                    {new Date(
-                        (lastReading?.timestamp || 0) * 1000
-                    ).toLocaleString('en-US', { timeZone: 'Europe/Sofia' })}
+                    {new Date(lastTimestamp * 1000).toLocaleString('en-US', {
+                        timeZone: 'Europe/Sofia'
+                    })}
                 </Text>
-                <Text style={styles.text}>
-                    moisture: {lastReading?.moisture}%, sensor:{' '}
-                    {lastReading?.sensor}
-                </Text>
+
+                {Object.keys(userReadings?.[lastTimestamp] || []).map((key) => (
+                    <Text style={styles.text}>
+                        {/* @ts-ignore TODO */}
+                        {key} - {userReadings?.[lastTimestamp][key]}
+                    </Text>
+                ))}
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        height: '100%'
+        height: '100%',
+        backgroundColor: 'black'
     },
     text: {
-        color: 'white'
+        color: 'white',
+        textAlign: 'center'
+    },
+    heading: {
+        color: 'white',
+        textAlign: 'center',
+        marginTop: 45
     }
 });
