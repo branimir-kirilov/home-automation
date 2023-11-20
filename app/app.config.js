@@ -16,6 +16,7 @@ export default {
             supportsTablet: true
         },
         android: {
+            package: 'com.homeautomation.home',
             adaptiveIcon: {
                 foregroundImage: './assets/icon.png',
                 backgroundColor: '#263543'
@@ -25,6 +26,9 @@ export default {
             favicon: './assets/favicon.png'
         },
         extra: {
+            eas: {
+                projectId: process.env.PROJECT_ID
+            },
             WEMOS_HOST: process.env.WEMOS_HOST,
             FIREBASE: {
                 API_KEY: process.env.FIREBASE_API_KEY,
